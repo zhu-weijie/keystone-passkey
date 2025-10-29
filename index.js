@@ -4,6 +4,9 @@ const path = require('path');
 const layouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
+const session = require('express-session');
+const SequelizeStore = require('connect-session-sequelize')(session.Store);
+const db = require('./db/init');
 
 // Initialize the express application
 const app = express();
@@ -15,6 +18,11 @@ const port = process.env.PORT || 3000;
 // to listen on all available network interfaces, not just localhost.
 const host = '0.0.0.0';
 
+// --- Session Store Setup ---
+const sessionStore = new SequelizeStore({
+  db: db,
+});
+
 // --- Body Parsers & Form Data Middleware ---
 // Parse JSON payloads
 app.use(express.json());
@@ -24,6 +32,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // Parse multipart/form-data. .none() means we are only accepting text fields.
 app.use(multer().none());
+
+// --- Session Middleware ---
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    },
+  })
+);
+
+// Sync the session store, creating the Sessions table if it doesn't exist
+sessionStore.sync();
 
 // --- EJS and Layouts Setup ---
 app.use(layouts);
