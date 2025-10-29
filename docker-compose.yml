@@ -7,10 +7,11 @@ services:
     # Sets the default command to run when the container starts.
     # We use 'nodemon' to automatically restart the server on file changes.
     command: npx nodemon index.js
-    # Maps port 3000 on the host machine to port 3000 in the container.
-    # This lets us access the app at http://localhost:3000.
+    # Load environment variables from the .env file into the 'web' service.
+    env_file:
+      - .env
     ports:
-      - "3000:3000"
+      - "${PORT}:${PORT}" # Use the variable from .env
     # Mounts the current directory on the host to /usr/src/app in the container.
     # This enables live reloading: changes you make locally are reflected inside the container.
     volumes:
@@ -19,3 +20,24 @@ services:
       # inside the container (installed by the Dockerfile) from being overwritten by the empty
       # local node_modules from the volume mount above.
       - /usr/src/app/node_modules
+    # 'depends_on' ensures that the 'db' service is started before the 'web' service.
+    # This prevents the application from trying to connect to a database that isn't ready.
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    # Use 'environment' to map our variables
+    # to the names the postgres image specifically requires.
+    environment:
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_DB: ${PGDATABASE}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+# Top-level 'volumes' key to declare the named volume.
+volumes:
+  postgres-db:
