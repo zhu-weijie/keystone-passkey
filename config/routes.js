@@ -2,9 +2,10 @@
 const express = require('express');
 const router = express.Router();
 
-// We will import controllers here later
-router.get('/', (req, res) => {
-  res.send('Hello from the router!');
-});
+// Import the controller
+const pagesController = require('../app/controllers/pages');
+
+// Use the controller's 'welcome' method for the root route
+router.get('/', pagesController.welcome);
 
 module.exports = router;
