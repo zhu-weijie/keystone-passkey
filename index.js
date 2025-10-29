@@ -7,6 +7,7 @@ const multer = require('multer');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 const db = require('./db/init');
+const passport = require('passport');
 
 // Initialize the express application
 const app = express();
@@ -45,6 +46,11 @@ app.use(
     },
   })
 );
+
+// --- Passport.js Middleware ---
+// Initialize Passport to use session-based authentication.
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Sync the session store, creating the Sessions table if it doesn't exist
 sessionStore.sync();

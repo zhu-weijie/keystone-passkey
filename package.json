@@ -18,6 +18,8 @@
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.2",
     "multer": "^2.0.2",
+    "passport": "^0.7.0",
+    "passport-fido2-webauthn": "^0.1.0",
     "pg": "^8.16.3",
     "sequelize": "^6.37.7"
   },
