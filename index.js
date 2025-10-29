@@ -21,6 +21,10 @@ app.set('views', path.join(__dirname, 'app/views'));
 // Set the master layout file
 app.set('layout', 'layouts/application');
 
+// --- Static Assets ---
+// This middleware serves files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Load the main router
 app.use('/', require('./config/routes'));
 
