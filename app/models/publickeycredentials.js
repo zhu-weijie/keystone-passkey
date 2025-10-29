@@ -3,30 +3,37 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class PublicKeyCredentials extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // A user can have many Public Key Credentials
-      User.hasMany(models.PublicKeyCredentials, {
+      // This credential belongs to one User
+      PublicKeyCredentials.belongsTo(models.User, {
         foreignKey: 'user_id',
       });
     }
   }
-  User.init({
-    email: {
+  PublicKeyCredentials.init({
+    external_id: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true
     },
-    handle: DataTypes.BLOB
+    public_key: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    }
   }, {
     sequelize,
-    modelName: 'User',
-    tableName: 'users'
+    modelName: 'PublicKeyCredentials',
+    tableName: 'public_key_credentials' // Set the table name
   });
-  return User;
+  return PublicKeyCredentials;
 };
