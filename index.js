@@ -6,7 +6,7 @@ const app = express();
 
 // Define the port the server will run on.
 // We use 3000 to match the port exposed in our Docker files.
-const port = 3000;
+const port = process.env.PORT || 3000;
 // Define the host. '0.0.0.0' is important for Docker, as it tells the server
 // to listen on all available network interfaces, not just localhost.
 const host = '0.0.0.0';
