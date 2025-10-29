@@ -2,6 +2,8 @@
 const express = require('express');
 const path = require('path');
 const layouts = require('express-ejs-layouts');
+const cookieParser = require('cookie-parser');
+const multer = require('multer');
 
 // Initialize the express application
 const app = express();
@@ -12,6 +14,16 @@ const port = process.env.PORT || 3000;
 // Define the host. '0.0.0.0' is important for Docker, as it tells the server
 // to listen on all available network interfaces, not just localhost.
 const host = '0.0.0.0';
+
+// --- Body Parsers & Form Data Middleware ---
+// Parse JSON payloads
+app.use(express.json());
+// Parse URL-encoded payloads
+app.use(express.urlencoded({ extended: false }));
+// Parse cookie headers
+app.use(cookieParser());
+// Parse multipart/form-data. .none() means we are only accepting text fields.
+app.use(multer().none());
 
 // --- EJS and Layouts Setup ---
 app.use(layouts);
