@@ -11,11 +11,8 @@ const port = process.env.PORT || 3000;
 // to listen on all available network interfaces, not just localhost.
 const host = '0.0.0.0';
 
-// Define a simple route for the root URL ('/')
-// When a GET request is made to this URL, it will respond with a simple string.
-app.get('/', (req, res) => {
-  res.send('Hello, Keystone!');
-});
+// Load the main router
+app.use('/', require('./config/routes'));
 
 // Start the server and make it listen for connections on the specified port and host.
 // A confirmation message is logged to the console once the server is running.
