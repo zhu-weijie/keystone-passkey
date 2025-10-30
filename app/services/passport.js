@@ -5,13 +5,31 @@ const db = require('../../db/init');
 const { User, PublicKeyCredentials } = require('../models');
 
 class PassportService {
-  init(store) {
-    // The WebAuthn strategy will be configured here.
-    // passport.use(new WebAuthnStrategy(...));
+  constructor() {
+    // Bind the methods to the class instance to ensure 'this' is correct
+    this.verify = this.verify.bind(this);
+    this.register = this.register.bind(this);
+  }
 
-    // Serialization and deserialization functions will be defined here.
-    // passport.serializeUser(...);
-    // passport.deserializeUser(...);
+  init(store) {
+    // Configure the WebAuthn strategy.
+    // We pass our verify and register methods as the callbacks.
+    passport.use(new WebAuthnStrategy({ store: store }, this.verify, this.register));
+
+    // 'serializeUser' determines what user information should be stored in the session.
+    // We store a minimal object to keep the session lightweight.
+    passport.serializeUser((user, done) => {
+      process.nextTick(() => {
+        done(null, { id: user.id, email: user.email });
+      });
+    });
+
+    // 'deserializeUser' is used to retrieve the user from the session on subsequent requests.
+    passport.deserializeUser((user, done) => {
+      process.nextTick(() => {
+        return done(null, user);
+      });
+    });
   }
 
   /**
