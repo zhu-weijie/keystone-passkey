@@ -46,6 +46,35 @@ class AuthController {
       });
     };
   }
+
+  // This runs on successful authentication
+  loginSuccess(req, res, next) {
+    // Passport's `req.login` establishes a session.
+    req.login(req.user, (err) => {
+      if (err) { return next(err); }
+      // On success, respond with a JSON object indicating a redirect to the dashboard.
+      res.json({ ok: true, destination: '/' });
+    });
+  }
+
+  // This runs on a failed authentication
+  loginFail(err, req, res, next) {
+    const cxx = Math.floor(err.status / 100);
+    if (cxx != 4) { return next(err); }
+    // On failure, respond with a JSON object indicating a redirect back to the login page.
+    res.json({ ok: false, destination: '/login' });
+  }
+
+  // New validation middleware
+  validateCredential(req, res, next) {
+    if (!req.body || !req.body.response) {
+      // If the request body is missing the 'response' object, it's invalid.
+      // Send a 400 Bad Request response and stop the chain.
+      return res.status(400).json({ error: 'Invalid credential request body.' });
+    }
+    // If validation passes, proceed to the next middleware (Passport).
+    next();
+  }
 }
 
 module.exports = new AuthController();
