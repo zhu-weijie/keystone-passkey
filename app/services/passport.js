@@ -15,6 +15,45 @@ class PassportService {
   }
 
   /**
+   * The 'verify' callback for the WebAuthn strategy.
+   * This function is called when a user attempts to log in.
+   *
+   * @param {string} id - The credential's external ID (base64url encoded).
+   * @param {Buffer} userHandle - The user handle from the authenticator.
+   * @param {function} done - The callback to signal completion.
+   */
+  async verify(id, userHandle, done) {
+    try {
+      // 1. Find the credential in the database by its external ID.
+      const cred = await PublicKeyCredentials.findOne({ where: { external_id: id } });
+
+      if (!cred) {
+        return done(null, false, { message: 'Invalid key.' });
+      }
+
+      // 2. Find the user associated with that credential.
+      const user = await User.findOne({ where: { id: cred.user_id } });
+
+      if (!user) {
+        return done(null, false, { message: 'No such user.' });
+      }
+
+      // 3. Security Check: Compare the user handle from the authenticator with the one
+      // stored for the user. They must match.
+      if (Buffer.compare(user.handle, userHandle) !== 0) {
+        return done(null, false, { message: 'Handles do not match.' });
+      }
+
+      // 4. If all checks pass, signal success to Passport.
+      // Return the user and their stored public key. Passport will use the
+      // public key to cryptographically verify the authenticator's signature.
+      return done(null, user, cred.public_key);
+    } catch (error) {
+      return done(error);
+    }
+  }
+
+  /**
    * The 'register' callback for the WebAuthn strategy.
    * This function is called when a new credential is created.
    *
