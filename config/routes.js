@@ -17,5 +17,6 @@ router.get('/', pagesController.welcome, adminController.dashboard);
 router.get('/register', authController.register);
 router.get('/login', authController.login);
 router.post('/register/public-key/challenge', authController.createChallenge(store));
+router.post('/login/public-key/challenge', authController.getChallenge(store));
 
 module.exports = router;
