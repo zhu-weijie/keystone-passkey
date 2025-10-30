@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "base64url": "^3.0.1",
     "connect-session-sequelize": "^8.0.2",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
@@ -21,7 +22,8 @@
     "passport": "^0.7.0",
     "passport-fido2-webauthn": "^0.1.0",
     "pg": "^8.16.3",
-    "sequelize": "^6.37.7"
+    "sequelize": "^6.37.7",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10",
