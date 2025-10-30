@@ -35,6 +35,17 @@ class AuthController {
       });
     };
   }
+
+  getChallenge(store) {
+    return (req, res, next) => {
+      // Use the store to generate a new challenge for this session.
+      store.challenge(req, (err, challenge) => {
+        if (err) { return next(err); }
+        // Send the base64url encoded challenge to the client.
+        res.json({ challenge: base64url.encode(challenge) });
+      });
+    };
+  }
 }
 
 module.exports = new AuthController();
